@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/common/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="calculator/CalculatorApp.vcxproj" Id="c28a2d0a-908e-480a-96f6-07457bb7eee9" />
+</Solution>
