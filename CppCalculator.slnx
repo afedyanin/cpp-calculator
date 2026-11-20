@@ -7,4 +7,7 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="calculator/CalculatorApp.vcxproj" Id="c28a2d0a-908e-480a-96f6-07457bb7eee9" />
+  <Folder Name="/tests/">
+    <Project Path="tests/CalculatorTests.vcxproj" Id="2d9f8e41-6b3a-4f57-9c02-5a1d7e8b4c60" />
+  </Folder>
 </Solution>

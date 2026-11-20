@@ -2,82 +2,121 @@
 
 #include <cmath>
 #include <iostream>
+#include <optional>
+#include <stdexcept>
 #include <string>
+#include <string_view>
 
-using namespace std;
+namespace {
 
-bool ReadNumber(Number& result)
+constexpr std::string_view kAdd = "+";
+constexpr std::string_view kSubtract = "-";
+constexpr std::string_view kMultiply = "*";
+constexpr std::string_view kDivide = "/";
+constexpr std::string_view kPower = "**";
+
+constexpr std::string_view kPrint = "=";
+constexpr std::string_view kClear = "c";
+constexpr std::string_view kSave = "s";
+constexpr std::string_view kLoad = "l";
+constexpr std::string_view kQuit = "q";
+
+void PrintError(std::string_view message)
 {
-    if (cin >> result) {
-        return true;
+    std::cerr << "Error: " << message << '\n';
+}
+
+} // namespace
+
+std::optional<Number> ReadNumber()
+{
+    Number value = 0;
+    if (std::cin >> value) {
+        return value;
     }
 
-    cerr << "Error: Numeric operand expected\n";
-    return false;
+    PrintError("Numeric operand expected");
+    return std::nullopt;
+}
+
+bool IsOperation(std::string_view token)
+{
+    return token == kAdd || token == kSubtract || token == kMultiply || token == kDivide ||
+           token == kPower;
+}
+
+Number ApplyOperation(Number lhs, std::string_view operation, Number rhs)
+{
+    if (operation == kAdd) {
+        return lhs + rhs;
+    }
+
+    if (operation == kSubtract) {
+        return lhs - rhs;
+    }
+
+    if (operation == kMultiply) {
+        return lhs * rhs;
+    }
+
+    if (operation == kDivide) {
+        return lhs / rhs;
+    }
+
+    if (operation == kPower) {
+        return std::pow(lhs, rhs);
+    }
+
+    throw std::invalid_argument("ApplyOperation: unknown operation");
 }
 
 bool RunCalculatorCycle()
 {
-    Number currentValue = 0;
-    if (!ReadNumber(currentValue)) {
+    const std::optional<Number> firstNumber = ReadNumber();
+    if (!firstNumber) {
         return false;
     }
 
-    Number memory = 0;
-    bool isMemorySet = false;
+    Number currentValue = *firstNumber;
+    std::optional<Number> memory;
 
-    string command;
-    while (cin >> command) {
-        if (command == "=") {
-            cout << currentValue << '\n';
+    std::string command;
+    while (std::cin >> command) {
+        if (IsOperation(command)) {
+            const std::optional<Number> operand = ReadNumber();
+            if (!operand) {
+                return false;
+            }
+
+            if (command == kDivide && *operand == 0.0) {
+                PrintError("Division by zero");
+                return false;
+            }
+
+            currentValue = ApplyOperation(currentValue, command, *operand);
         }
-        else if (command == "c") {
+        else if (command == kPrint) {
+            std::cout << currentValue << '\n';
+        }
+        else if (command == kClear) {
             currentValue = 0;
         }
-        else if (command == ":") {
-            if (!ReadNumber(currentValue)) {
-                return false;
-            }
-        }
-        else if (command == "s") {
+        else if (command == kSave) {
             memory = currentValue;
-            isMemorySet = true;
         }
-        else if (command == "l") {
-            if (!isMemorySet) {
-                cerr << "Error: Memory is empty\n";
+        else if (command == kLoad) {
+            if (!memory) {
+                PrintError("Memory is empty");
                 return false;
             }
 
-            currentValue = memory;
+            currentValue = *memory;
         }
-        else if (command == "q") {
+        else if (command == kQuit) {
             return true;
         }
-        else if (command == "+" || command == "-" || command == "*" || command == "/" || command == "**") {
-            Number operand = 0;
-            if (!ReadNumber(operand)) {
-                return false;
-            }
-
-            if (command == "+") {
-                currentValue += operand;
-            }
-            else if (command == "-") {
-                currentValue -= operand;
-            }
-            else if (command == "*") {
-                currentValue *= operand;
-            }
-            else if (command == "/") {
-                currentValue /= operand;
-            }
-            else if (command == "**") {
-                currentValue = pow(currentValue, operand);
-            }
-        }
         else {
-            cerr << "Error: Unknown token " << command << '\n';
+            PrintError("Unknown token " + command);
             return false;
         }
     }

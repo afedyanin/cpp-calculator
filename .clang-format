@@ -1,0 +1,18 @@
+# Стиль из README.md: { на строке с командой (для управляющих конструкций),
+# } на отдельной строке; фигурная скобка функции — на новой строке.
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++20
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+BreakBeforeBraces: Stroustrup
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+IndentCaseLabels: false
+PointerAlignment: Left
+NamespaceIndentation: None
+SortIncludes: CaseSensitive

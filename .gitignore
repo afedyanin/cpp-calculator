@@ -426,3 +426,11 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# CMake build directories
+build/
+cmake-build-*/
+CMakeUserPresets.json
+
+# clangd / clang-format cache
+.cache/
