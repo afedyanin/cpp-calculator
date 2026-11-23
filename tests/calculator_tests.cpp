@@ -141,6 +141,7 @@ TEST(IsOperationRejectsCommandsAndOtherTokens)
     CHECK(!IsOperation(""));
     CHECK(!IsOperation("="));
     CHECK(!IsOperation("c"));
+    CHECK(!IsOperation(":"));
     CHECK(!IsOperation("s"));
     CHECK(!IsOperation("l"));
     CHECK(!IsOperation("q"));
@@ -272,6 +273,32 @@ TEST(RunCalculatorCycleClearsCurrentValue)
 
     CHECK(result.completed);
     CHECK_EQ(result.output, "0\n");
+}
+
+TEST(RunCalculatorCycleAssignsNewValue)
+{
+    const RunResult result = Run("5 : 3 = q");
+
+    CHECK(result.completed);
+    CHECK_EQ(result.output, "3\n");
+    CHECK_EQ(result.errors, "");
+}
+
+TEST(RunCalculatorCycleAssignsThenAppliesOperations)
+{
+    const RunResult result = Run("5 : 3 + 2 = q");
+
+    CHECK(result.completed);
+    CHECK_EQ(result.output, "5\n");
+}
+
+TEST(RunCalculatorCycleReportsMissingValueAfterAssign)
+{
+    const RunResult result = Run("5 : q");
+
+    CHECK(!result.completed);
+    CHECK_EQ(result.output, "");
+    CHECK_EQ(result.errors, "Error: Numeric operand expected\n");
 }
 
 TEST(RunCalculatorCycleStoresAndLoadsMemory)

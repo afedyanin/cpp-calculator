@@ -2,10 +2,8 @@
 
 #include <cmath>
 #include <iostream>
-#include <optional>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 
 namespace {
 
@@ -17,6 +15,7 @@ constexpr std::string_view kPower = "**";
 
 constexpr std::string_view kPrint = "=";
 constexpr std::string_view kClear = "c";
+constexpr std::string_view kAssign = ":";
 constexpr std::string_view kSave = "s";
 constexpr std::string_view kLoad = "l";
 constexpr std::string_view kQuit = "q";
@@ -45,26 +44,26 @@ bool IsOperation(std::string_view token)
            token == kPower;
 }
 
-Number ApplyOperation(Number lhs, std::string_view operation, Number rhs)
+Number ApplyOperation(Number left_operand, std::string_view operation, Number right_operand)
 {
     if (operation == kAdd) {
-        return lhs + rhs;
+        return left_operand + right_operand;
     }
 
     if (operation == kSubtract) {
-        return lhs - rhs;
+        return left_operand - right_operand;
     }
 
     if (operation == kMultiply) {
-        return lhs * rhs;
+        return left_operand * right_operand;
     }
 
     if (operation == kDivide) {
-        return lhs / rhs;
+        return left_operand / right_operand;
     }
 
     if (operation == kPower) {
-        return std::pow(lhs, rhs);
+        return std::pow(left_operand, right_operand);
     }
 
     throw std::invalid_argument("ApplyOperation: unknown operation");
@@ -72,12 +71,12 @@ Number ApplyOperation(Number lhs, std::string_view operation, Number rhs)
 
 bool RunCalculatorCycle()
 {
-    const std::optional<Number> firstNumber = ReadNumber();
-    if (!firstNumber) {
+    const std::optional<Number> first_number = ReadNumber();
+    if (!first_number) {
         return false;
     }
 
-    Number currentValue = *firstNumber;
+    Number current_value = *first_number;
     std::optional<Number> memory;
 
     std::string command;
@@ -93,16 +92,24 @@ bool RunCalculatorCycle()
                 return false;
             }
 
-            currentValue = ApplyOperation(currentValue, command, *operand);
+            current_value = ApplyOperation(current_value, command, *operand);
         }
         else if (command == kPrint) {
-            std::cout << currentValue << '\n';
+            std::cout << current_value << '\n';
         }
         else if (command == kClear) {
-            currentValue = 0;
+            current_value = 0;
+        }
+        else if (command == kAssign) {
+            const std::optional<Number> new_value = ReadNumber();
+            if (!new_value) {
+                return false;
+            }
+
+            current_value = *new_value;
         }
         else if (command == kSave) {
-            memory = currentValue;
+            memory = current_value;
         }
         else if (command == kLoad) {
             if (!memory) {
@@ -110,7 +117,7 @@ bool RunCalculatorCycle()
                 return false;
             }
 
-            currentValue = *memory;
+            current_value = *memory;
         }
         else if (command == kQuit) {
             return true;

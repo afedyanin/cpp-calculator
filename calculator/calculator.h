@@ -15,7 +15,8 @@ using Number = double;
 // Применяет бинарную операцию к операндам.
 // Предусловие: IsOperation(operation) == true,
 // иначе выбрасывается std::invalid_argument.
-[[nodiscard]] Number ApplyOperation(Number lhs, std::string_view operation, Number rhs);
+[[nodiscard]] Number ApplyOperation(Number left_operand, std::string_view operation,
+                                    Number right_operand);
 
 // Запускает цикл калькулятора.
 // Возвращает true, если работа завершилась штатно командой q,
